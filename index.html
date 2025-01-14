@@ -1,67 +1,90 @@
-<!--
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #fff;
-        }
-        .video-container {
-            max-width: 100%;
-            margin: 0 auto;
-            text-align: center;
-        }
-        iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-        }
-        .instruction-box {
-            background-color: #f7f7f7;
-            border: 2px solid #ccc;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 500px;
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        .whatsapp-button {
-            display: inline-block;
-            background-color: #25D366;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        .whatsapp-button:hover {
-            background-color: #128C7E;
-        }
-    </style>
-</head>
-<body>
-    <!-- Video Player Section -->
-    <div class="video-container">
-        <iframe src="https://www.hlsplayer.net/embed?type=m3u8&src=https://play1nm.hnyongshun.cn/live/ballbar_38380.m3u8" allowfullscreen></iframe>
-    </div>
+<!-- WhatsApp Button -->
+<a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" class="whatsapp-button" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; text-decoration: none; width: 100%; max-width: 640px; text-align: center; margin: 10px auto;">Join WhatsApp Group</a>
 
-    <!-- Instruction Box -->
-    <div class="instruction-box">
-        <p><strong>Important:</strong> Please wait a few moments while the video starts playing.</p>
-        <p>The movie will play automatically in any language.</p>
-    </div>
+<!-- Instruction Box -->
+<div class="instruction-box" style="margin: 20px auto; font-size: 16px; color: #333; background-color: #fffae5; border: 2px solid #ffce00; padding: 15px; border-radius: 5px; width: 90%; max-width: 600px; text-align: center; font-weight: bold;">
+    Instructions: Select a match from the buttons below to start streaming. If the video doesn’t load immediately, please wait atleast 1 minute and try again.
+</div>
 
-    <!-- WhatsApp Button -->
-    <div style="text-align: center;">
-        <a href="https://whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" class="whatsapp-button" target="_blank">
-            Join Our WhatsApp Group
-        </a>
+<!-- Player Container -->
+<div style="position: relative; width: 100%; max-width: 640px; margin: auto; background-color: black; height: auto; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+    <!-- Loading Overlay Note -->
+    <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6); color: white; font-size: 18px; text-align: center; padding: 20px; border-radius: 5px;">
+        Loading... Please wait a few seconds for the video to start.
     </div>
-</body>
-</html>
+    <!-- JW Player -->
+    <div id="player" style="width: 100%; max-width: 640px;"></div>
+</div>
+
+<!-- Video Playlist (Buttons in Horizontal Layout) -->
+<div id="playlist" style="display: flex; gap: 5px; margin-top: 10px; justify-content: center; flex-wrap: wrap; padding: 0 10px;">
+    <!-- Buttons will be generated here -->
+</div>
+
+<!-- Include JW Player -->
+<script src="//content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+const options = {
+    player_list: [
+        { "file": "https://v5.sportsonline.si/channels/pt/sporttv2.php", "title": "Venezuela x Brazil" },
+        { "file": "https://v5.sportsonline.si/channels/pt/sporttv1.php", "title": "Belgium x Italy" },
+        { "file": "https://v5.sportsonline.si/channels/pt/sporttv2.php", "title": "Paraguay x Argentina" },
+        { "file": "https://v5.sportsonline.si/channels/pt/sporttv4.php", "title": "Greece x England" },
+        { "file": "https://v5.sportsonline.si/channels/hd/hd3.php", "title": "Benin x Nigeria" }
+    ]
+};
+
+// Initialize JW Player with the first video in the list
+function initializePlayer(videoFile) {
+    jwplayer("player").setup({
+        file: videoFile,
+        playbackRateControls: [0.75, 1, 1.25, 1.5],
+        width: "100%",
+        aspectratio: "16:9",
+        mute: false,
+        repeat: true,
+        autostart: true,
+        primary: "html5",
+        controls: true,
+        skin: {
+            name: "glow",
+            active: "red"
+        }
+    });
+    
+    // Hide the loading overlay once the video loads
+    jwplayer("player").on('play', () => {
+        document.getElementById("loadingOverlay").style.display = "none";
+    });
+}
+
+// Initial setup for the first video
+initializePlayer(options.player_list[0].file);
+
+// Generate Playlist Buttons
+const playlistContainer = document.getElementById("playlist");
+options.player_list.forEach((video) => {
+    const button = document.createElement("button");
+    button.textContent = video.title;
+    button.style.padding = "8px 12px";
+    button.style.fontSize = "14px";
+    button.style.cursor = "pointer";
+    button.style.borderRadius = "5px";
+    button.style.border = "1px solid #333";
+    button.style.backgroundColor = "#f0f0f0";
+    button.style.color = "#333";
+    button.style.width = "100%";
+    button.style.maxWidth = "640px";
+    button.style.height = "35px";
+
+    // Update player with the selected video on button click and show loading overlay
+    button.onclick = () => {
+        document.getElementById("loadingOverlay").style.display = "flex"; // Show loading overlay
+        initializePlayer(video.file);
+    };
+
+    playlistContainer.appendChild(button);
+});
+//]]>
+</script>
