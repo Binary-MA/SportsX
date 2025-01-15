@@ -26,12 +26,17 @@
         #playerContainer {
             position: relative;
             background-color: black;
-            padding: 0 10px;  /* Added padding to avoid content touching the edges */
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
         }
 
         #videoPlayer, #playerIframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: auto; /* Maintain aspect ratio */
+            height: 100%;
         }
 
         .whatsapp-button {
@@ -102,6 +107,9 @@
     Instructions: Select a match from the buttons below to start streaming. If the video doesn’t load immediately, please wait a few seconds and try again.
 </div>
 
+<!-- Loading Message -->
+<div id="loadingMessage" style="display: none;">Loading stream...</div>
+
 <!-- Player Container -->
 <div id="playerContainer">
     <!-- Video Iframe -->
@@ -116,7 +124,10 @@
 </div>
 
 <!-- WhatsApp Button -->
-<a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" class="whatsapp-button">Join WhatsApp Group</a>
+<a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" class="whatsapp-button" alt="Join our WhatsApp group">Join WhatsApp Group</a>
+
+<!-- Play/Pause Button -->
+<button id="playPauseBtn" onclick="togglePlayPause()">Play</button>
 
 <script type="text/javascript">
 // Playlist links with M3U8 and PHP streams
@@ -132,12 +143,19 @@ const options = {
 
 // Load selected video in iframe (or video player for M3U8)
 function loadVideo(videoFile, type) {
+    document.getElementById("loadingMessage").style.display = "block";
     if (type === "m3u8") {
+        document.getElementById("videoPlayer").oncanplay = function() {
+            document.getElementById("loadingMessage").style.display = "none";
+        };
         document.getElementById("videoPlayer").style.display = "block";
         document.getElementById("playerIframe").style.display = "none";
         document.getElementById("videoPlayer").src = videoFile;
         document.getElementById("videoPlayer").play();
     } else if (type === "php") {
+        document.getElementById("playerIframe").onload = function() {
+            document.getElementById("loadingMessage").style.display = "none";
+        };
         document.getElementById("playerIframe").style.display = "block";
         document.getElementById("videoPlayer").style.display = "none";
         document.getElementById("playerIframe").src = videoFile;
@@ -163,10 +181,23 @@ window.onload = () => {
     const firstVideo = options.player_list[0];
     loadVideo(firstVideo.file, firstVideo.type);
 };
+
+// Play/Pause Button Toggle
+function togglePlayPause() {
+    const video = document.getElementById("videoPlayer");
+    if (video.paused) {
+        video.play();
+        document.getElementById("playPauseBtn").textContent = "Pause";
+    } else {
+        video.pause();
+        document.getElementById("playPauseBtn").textContent = "Play";
+    }
+};
 </script>
 
 </body>
 </html>
+
 
 
 
