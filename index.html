@@ -7,7 +7,9 @@
     <style>
         /* General Styles */
         body, .container { margin: 0; padding: 0; width: 100%; max-width: 100%; }
-        .instruction-box { width: 100%; max-width: 600px; margin: 20px auto; text-align: center; font-size: 16px; background-color: #fffae5; border: 2px solid #ffce00; padding: 10px; border-radius: 5px; font-weight: bold; }
+        .instruction-box, #playerContainer { width: 100%; max-width: 600px; margin: 20px auto; text-align: center; font-size: 16px; }
+        .instruction-box { background-color: #fffae5; border: 2px solid #ffce00; padding: 10px; border-radius: 5px; font-weight: bold; }
+        #playerContainer { position: relative; background-color: black; }
         iframe, video { width: 100%; height: 310px; border: none; }
         .whatsapp-button { display: block; background-color: #25D366; color: white; padding: 12px; border-radius: 5px; text-align: center; margin: 10px auto; }
         #playlist { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 0 10px; }
@@ -27,7 +29,7 @@
     Select a match to start streaming. If it doesn’t load, wait a few seconds and try again.
 </div>
 
-<!-- Player Container (No Box Around Player) -->
+<!-- Player Container -->
 <div id="playerContainer">
     <iframe id="playerIframe" src="" style="display: none;"></iframe>
     <video id="videoPlayer" controls autoplay style="display: none;"></video>
