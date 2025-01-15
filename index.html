@@ -7,12 +7,14 @@
     <style>
         /* General Styles */
         body, .container { margin: 0; padding: 0; width: 100%; max-width: 100%; }
-        .instruction-box { width: 100%; max-width: 600px; margin: 20px auto; text-align: center; font-size: 16px; background-color: #fffae5; border: 2px solid #ffce00; padding: 10px; border-radius: 5px; font-weight: bold; }
-        iframe, video { width: 100%; height: 310px; border: none; display: none; }
+        .instruction-box, #playerContainer { width: 100%; max-width: 600px; margin: 20px auto; text-align: center; font-size: 16px; }
+        .instruction-box { background-color: #fffae5; border: 2px solid #ffce00; padding: 10px; border-radius: 5px; font-weight: bold; }
+        #playerContainer { position: relative; background-color: black; }
+        iframe, video { width: 100%; height: 310px; border: none; }
         .whatsapp-button { display: block; background-color: #25D366; color: white; padding: 12px; border-radius: 5px; text-align: center; margin: 10px auto; }
         #playlist { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 0 10px; }
         button { width: 100%; max-width: 640px; padding: 8px 12px; background-color: #f0f0f0; color: #333; border: 1px solid #333; border-radius: 5px; }
-
+        
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .instruction-box { font-size: 14px; }
@@ -27,17 +29,7 @@
     Select a match to start streaming. If it doesn’t load, wait a few seconds and try again.
 </div>
 
-<!-- Ad Blocker (Inline Script) -->
-<script type="text/javascript">
-    (function() {
-        var iframeElements = document.getElementsByTagName('iframe');
-        for (var i = 0; i < iframeElements.length; i++) {
-            iframeElements[i].setAttribute('sandbox', 'allow-scripts allow-same-origin');
-        }
-    })();
-</script>
-
-<!-- Player Container (No Box Around Player) -->
+<!-- Player Container -->
 <div id="playerContainer">
     <iframe id="playerIframe" src="" style="display: none;"></iframe>
     <video id="videoPlayer" controls autoplay style="display: none;"></video>
@@ -87,6 +79,7 @@ window.onload = () => loadVideo(options.player_list[0].file, options.player_list
 
 </body>
 </html>
+
 
 
 
