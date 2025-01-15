@@ -23,12 +23,15 @@
             font-weight: bold;
         }
 
+        /* Correct 16:9 Aspect Ratio */
         #playerContainer {
             position: relative;
             background-color: black;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
             height: 0;
             overflow: hidden;
+            width: 100%;
+            max-width: 100%;
         }
 
         #videoPlayer, #playerIframe {
@@ -39,22 +42,30 @@
             height: 100%;
         }
 
+        /* WhatsApp Button */
         .whatsapp-button {
             display: inline-block;
             background-color: #25D366;
             color: white;
-            padding: 12px 20px;
+            padding: 18px 30px; /* Increased padding for prominence */
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px; /* Larger text for visibility */
             text-decoration: none;
-            width: 100%;
-            max-width: 640px;
             text-align: center;
-            margin: 10px auto;
+            margin: 20px auto;
+            width: 100%;
+            max-width: 720px; /* Increased width */
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
         }
 
+        .whatsapp-button:hover {
+            background-color: #128C7E; /* Hover effect */
+        }
+
+        /* Video Playlist (Buttons in Horizontal Layout) */
         #playlist {
             display: flex;
             gap: 10px;
@@ -91,7 +102,7 @@
             }
 
             .whatsapp-button {
-                font-size: 14px;
+                font-size: 16px;
             }
 
             #playerContainer {
@@ -125,9 +136,6 @@
 
 <!-- WhatsApp Button -->
 <a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" class="whatsapp-button" alt="Join our WhatsApp group">Join WhatsApp Group</a>
-
-<!-- Play/Pause Button -->
-<button id="playPauseBtn" onclick="togglePlayPause()">Play</button>
 
 <script type="text/javascript">
 // Playlist links with M3U8 and PHP streams
@@ -180,18 +188,6 @@ options.player_list.forEach((video) => {
 window.onload = () => {
     const firstVideo = options.player_list[0];
     loadVideo(firstVideo.file, firstVideo.type);
-};
-
-// Play/Pause Button Toggle
-function togglePlayPause() {
-    const video = document.getElementById("videoPlayer");
-    if (video.paused) {
-        video.play();
-        document.getElementById("playPauseBtn").textContent = "Pause";
-    } else {
-        video.pause();
-        document.getElementById("playPauseBtn").textContent = "Play";
-    }
 };
 </script>
 
