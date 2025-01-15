@@ -5,93 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sports Streaming</title>
     <style>
-        /* General Styles for Mobile Responsiveness */
-        .instruction-box, #playerContainer {
-            width: 100%;
-            max-width: 100%;
-            margin: 20px auto;
-        }
-
-        .instruction-box {
-            font-size: 16px;
-            color: #333;
-            background-color: #fffae5;
-            border: 2px solid #ffce00;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        #playerContainer {
-            position: relative;
-            background-color: black;
-            padding: 0 10px;  /* Added padding to avoid content touching the edges */
-        }
-
-        #videoPlayer, #playerIframe {
-            width: 100%;
-            height: auto; /* Maintain aspect ratio */
-        }
-
-        .whatsapp-button {
-            display: inline-block;
-            background-color: #25D366;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-            width: 100%;
-            max-width: 640px;
-            text-align: center;
-            margin: 10px auto;
-        }
-
-        #playlist {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 0 10px;
-        }
-
-        button {
-            width: 100%;
-            max-width: 640px;
-            padding: 8px 12px;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 5px;
-            border: 1px solid #333;
-            background-color: #f0f0f0;
-            color: #333;
-            height: 35px;
-            box-sizing: border-box;
-        }
-
-        /* Media Queries for Small Screens */
+        /* General Styles */
+        body, .container { margin: 0; padding: 0; width: 100%; max-width: 100%; }
+        .instruction-box, #playerContainer { width: 100%; max-width: 600px; margin: 20px auto; text-align: center; font-size: 16px; }
+        .instruction-box { background-color: #fffae5; border: 2px solid #ffce00; padding: 10px; border-radius: 5px; font-weight: bold; }
+        #playerContainer { position: relative; background-color: black; }
+        iframe, video { width: 100%; height: 310px; border: none; }
+        .whatsapp-button { display: block; background-color: #25D366; color: white; padding: 12px; border-radius: 5px; text-align: center; margin: 10px auto; }
+        #playlist { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 0 10px; }
+        button { width: 100%; max-width: 640px; padding: 8px 12px; background-color: #f0f0f0; color: #333; border: 1px solid #333; border-radius: 5px; }
+        
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .instruction-box {
-                font-size: 14px;
-                padding: 10px;
-            }
-
-            button {
-                font-size: 12px;
-                padding: 6px 10px;
-            }
-
-            .whatsapp-button {
-                font-size: 14px;
-            }
-
-            #playerContainer {
-                padding: 10px;
-            }
+            .instruction-box { font-size: 14px; }
+            button { font-size: 12px; }
         }
     </style>
 </head>
@@ -99,38 +26,31 @@
 
 <!-- Instruction Box -->
 <div class="instruction-box">
-    Instructions: Select a match from the buttons below to start streaming. If the video doesn’t load immediately, please wait a few seconds and try again.
+    Select a match to start streaming. If it doesn’t load, wait a few seconds and try again.
 </div>
 
 <!-- Player Container -->
 <div id="playerContainer">
-    <!-- Video Iframe -->
-    <iframe id="playerIframe" src="" style="display: none;" sandbox="allow-scripts allow-same-origin"></iframe>
-    <!-- Video Element (For M3U8 Streams) -->
+    <iframe id="playerIframe" src="" style="display: none;"></iframe>
     <video id="videoPlayer" controls autoplay style="display: none;"></video>
 </div>
 
-<!-- Video Playlist (Buttons in Horizontal Layout) -->
-<div id="playlist">
-    <!-- Buttons will be generated here -->
-</div>
+<!-- Video Playlist -->
+<div id="playlist"></div>
 
 <!-- WhatsApp Button -->
 <a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" class="whatsapp-button">Join WhatsApp Group</a>
 
-<script type="text/javascript">
-// Playlist links with M3U8 and PHP streams
+<script>
+// Playlist with M3U8 and PHP streams
 const options = {
     player_list: [
         { "file": "https://v5.sportsonline.si/channels/pt/sporttv2.php", "title": "Venezuela x Brazil", "type": "php" },
-        { "file": "https://v5.sportsonline.si/channels/pt/sporttv1.php", "title": "Belgium x Italy", "type": "php" },
-        { "file": "https://v5.sportsonline.si/channels/hd/hd3.php", "title": "Benin x Nigeria", "type": "php" },
-        { "file": "https://example.com/stream1.m3u8", "title": "M3U8 Stream 1", "type": "m3u8" },
-        { "file": "https://example.com/stream2.m3u8", "title": "M3U8 Stream 2", "type": "m3u8" }
+        { "file": "https://example.com/stream1.m3u8", "title": "M3U8 Stream 1", "type": "m3u8" }
     ]
 };
 
-// Load selected video in iframe (or video player for M3U8)
+// Load Video
 function loadVideo(videoFile, type) {
     if (type === "m3u8") {
         document.getElementById("videoPlayer").style.display = "block";
@@ -144,27 +64,20 @@ function loadVideo(videoFile, type) {
     }
 }
 
-// Generate Playlist Buttons
+// Generate Playlist
 const playlistContainer = document.getElementById("playlist");
 options.player_list.forEach((video) => {
     const button = document.createElement("button");
     button.textContent = video.title;
-
-    // Update iframe or video player with the selected stream on button click
-    button.onclick = () => {
-        loadVideo(video.file, video.type);
-    };
-
+    button.onclick = () => loadVideo(video.file, video.type);
     playlistContainer.appendChild(button);
 });
 
-// Auto-load and auto-play the first video in the playlist
-window.onload = () => {
-    const firstVideo = options.player_list[0];
-    loadVideo(firstVideo.file, firstVideo.type);
-};
+// Auto-load first video
+window.onload = () => loadVideo(options.player_list[0].file, options.player_list[0].type);
 </script>
 
 </body>
 </html>
+
 
