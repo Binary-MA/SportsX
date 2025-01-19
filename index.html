@@ -3,119 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match Streaming</title>
+    <meta name="description" content="Stream live sports matches effortlessly on any device. Join our WhatsApp group for the latest updates.">
+    <meta name="keywords" content="sports streaming, live matches, watch football, WhatsApp sports updates">
+    <title>Sports Streaming</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        #videoPlayer {
-            width: 90%;
-            max-width: 640px;
-            height: 360px;
+        /* General Styles for Mobile Responsiveness */
+        .instruction-box, #playerContainer {
+            width: 100%;
+            max-width: 100%;
             margin: 20px auto;
-            border: 1px solid #ccc;
-            border-radius: 8px;
         }
-        #playlist {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px 0;
-        }
-        #playlist button {
-            width: 90%;
-            max-width: 640px;
+
+        .instruction-box {
+            font-size: 16px;
+            color: #333;
+            background-color: #fffae5;
+            border: 2px solid #ffce00;
             padding: 10px;
-            margin: 5px 0;
-            background-color: #007BFF;
-            color: white;
-            border: none;
             border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
+            text-align: center;
+            font-weight: bold;
         }
-        #playlist button:hover {
-            background-color: #0056b3;
+
+        /* Player Container */
+        #playerContainer {
+            position: relative;
+            background-color: black;
+            width: 100%;
+            max-width: 100%;
         }
-        #instructionBox {
-            margin: 10px auto;
-            width: 90%;
-            max-width: 640px;
-            background-color: #d9edf7;
-            color: #31708f;
-            padding: 10px;
-            border: 1px solid #bce8f1;
-            border-radius: 5px;
-            text-align: left;
-            font-size: 14px;
-        }
-        #adBlockerMessage {
-            margin: 10px auto;
-            width: 90%;
-            max-width: 640px;
-            background-color: #ffcccb;
-            color: #a94442;
-            padding: 10px;
-            border: 1px solid #ebccd1;
-            border-radius: 5px;
-            font-size: 14px;
-            text-align: left;
-        }
-        #whatsappButton {
-            text-decoration: none;
+
+        #videoPlayer, #playerIframe {
+            width: 100%;
+            height: auto;
             display: block;
+        }
+
+        /* WhatsApp Button */
+        .whatsapp-button {
+            display: inline-block;
             background-color: #25D366;
             color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 14px 24px; /* Reduced padding for compact size */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px; /* Slightly smaller font */
+            text-decoration: none;
+            text-align: center;
             margin: 20px auto;
-            width: 90%;
-            max-width: 640px;
+            width: 100%;
+            max-width: 720px;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+        }
+
+        .whatsapp-button:hover {
+            background-color: #128C7E; /* Hover effect */
+        }
+
+        /* Video Playlist (Buttons in Horizontal Layout) */
+        #playlist {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0 10px;
+        }
+
+        button {
+            width: 100%;
+            max-width: 300px; /* Reduced button width */
+            padding: 6px 10px; /* Reduced padding */
+            font-size: 12px; /* Smaller font */
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #f0f0f0;
+            color: #333;
+            height: auto;
+            box-sizing: border-box;
+        }
+
+        /* Media Queries for Small Screens */
+        @media (max-width: 768px) {
+            .instruction-box {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            button {
+                font-size: 10px; /* Smaller font for smaller screens */
+                padding: 5px 8px;
+            }
+
+            .whatsapp-button {
+                font-size: 14px;
+            }
+
+            #playerContainer {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Instruction Box -->
-    <div id="instructionBox">
-        <strong>Instructions:</strong> Select a match below to start streaming. If the video doesn’t load, wait a few seconds and try again.
-    </div>
 
-    <!-- Ad Blocker Message -->
-    <div id="adBlockerMessage">
-        <strong>Note:</strong> Please disable your ad blocker to ensure smooth streaming.
-    </div>
+<!-- Instruction Box -->
+<div class="instruction-box">
+    Instructions: Select a match from the buttons below to start streaming. If the video doesn’t load immediately, please wait a few seconds and try again.
+</div>
 
-    <!-- Video Player -->
-    <video id="videoPlayer" controls autoplay></video>
+<!-- Loading Message -->
+<div id="loadingMessage" style="display: none;">Loading stream...</div>
 
-    <!-- Playlist -->
-    <div id="playlist">
-        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd1.php')">Ipswich Town x Manchester City</button>
-        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd2.php')">Real Madrid x Las Palmas</button>
-        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd1.php')">Everton x Tottenham Hotspur</button>
-        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd5.php')">Manchester United x Brighton & Hove Albion</button>
-    </div>
+<!-- Player Container -->
+<div id="playerContainer">
+    <!-- Video Iframe -->
+    <iframe id="playerIframe" src="" style="display: none;" sandbox="allow-scripts allow-same-origin"></iframe>
+    <!-- Video Element (For M3U8 Streams) -->
+    <video id="videoPlayer" controls autoplay style="display: none;"></video>
+</div>
 
-    <!-- WhatsApp Button -->
-    <a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" id="whatsappButton">
-        Join WhatsApp Group
-    </a>
+<!-- Video Playlist (Buttons in Horizontal Layout) -->
+<div id="playlist"></div>
 
-    <script>
-        // Load Stream
-        function loadStream(url) {
-            const videoPlayer = document.getElementById('videoPlayer');
-            videoPlayer.src = url;
-            videoPlayer.play();
-        }
-    </script>
+<!-- WhatsApp Button -->
+<a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" class="whatsapp-button" alt="Join our WhatsApp group">Join WhatsApp Group</a>
+
+<script type="text/javascript">
+// Playlist links with new matches
+const options = {
+    player_list: [
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Ipswich Town x Manchester City", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd2.php", "title": "Real Madrid x Las Palmas", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Everton x Tottenham Hotspur", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd5.php", "title": "Manchester United x Brighton & Hove Albion", "type": "php" }
+    ]
+};
+
+// Load selected video in iframe (or video player for M3U8)
+function loadVideo(videoFile, type) {
+    document.getElementById("loadingMessage").style.display = "block";
+    if (type === "m3u8") {
+        document.getElementById("videoPlayer").oncanplay = function() {
+            document.getElementById("loadingMessage").style.display = "none";
+        };
+        document.getElementById("videoPlayer").style.display = "block";
+        document.getElementById("playerIframe").style.display = "none";
+        document.getElementById("videoPlayer").src = videoFile;
+        document.getElementById("videoPlayer").play();
+    } else if (type === "php") {
+        document.getElementById("playerIframe").onload = function() {
+            document.getElementById("loadingMessage").style.display = "none";
+        };
+        document.getElementById("playerIframe").style.display = "block";
+        document.getElementById("videoPlayer").style.display = "none";
+        document.getElementById("playerIframe").src = videoFile;
+    }
+    document.getElementById("videoPlayer").onerror = function() {
+        alert("Failed to load the video. Please try another link.");
+        document.getElementById("loadingMessage").style.display = "none";
+    };
+}
+
+// Generate Playlist Buttons
+const playlistContainer = document.getElementById("playlist");
+options.player_list.forEach((video) => {
+    const button = document.createElement("button");
+    button.textContent = video.title;
+
+    // Update iframe or video player with the selected stream on button click
+    button.onclick = () => {
+        loadVideo(video.file, video.type);
+    };
+
+    playlistContainer.appendChild(button);
+});
+
+// Auto-load and auto-play the first video in the playlist
+window.onload = () => {
+    const firstVideo = options.player_list[0];
+    loadVideo(firstVideo.file, firstVideo.type);
+};
+</script>
+
 </body>
 </html>
+
 
 
 
