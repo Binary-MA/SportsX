@@ -41,46 +41,82 @@
         #playlist button:hover {
             background-color: #0056b3;
         }
+        #instructionBox {
+            margin: 10px auto;
+            width: 90%;
+            max-width: 640px;
+            background-color: #d9edf7;
+            color: #31708f;
+            padding: 10px;
+            border: 1px solid #bce8f1;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 14px;
+        }
+        #adBlockerMessage {
+            margin: 10px auto;
+            width: 90%;
+            max-width: 640px;
+            background-color: #ffcccb;
+            color: #a94442;
+            padding: 10px;
+            border: 1px solid #ebccd1;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: left;
+        }
+        #whatsappButton {
+            text-decoration: none;
+            display: block;
+            background-color: #25D366;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 640px;
+        }
     </style>
 </head>
 <body>
-    <div id="videoPlayer">
-        <iframe id="player" src="" frameborder="0" width="100%" height="100%" allowfullscreen></iframe>
+    <!-- Instruction Box -->
+    <div id="instructionBox">
+        <strong>Instructions:</strong> Select a match below to start streaming. If the video doesn’t load, wait a few seconds and try again.
     </div>
-    <div id="playlist"></div>
+
+    <!-- Ad Blocker Message -->
+    <div id="adBlockerMessage">
+        <strong>Note:</strong> Please disable your ad blocker to ensure smooth streaming.
+    </div>
+
+    <!-- Video Player -->
+    <video id="videoPlayer" controls autoplay></video>
+
+    <!-- Playlist -->
+    <div id="playlist">
+        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd1.php')">Ipswich Town x Manchester City</button>
+        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd2.php')">Real Madrid x Las Palmas</button>
+        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd1.php')">Everton x Tottenham Hotspur</button>
+        <button onclick="loadStream('https://v3.sportsonline.ps/channels/hd/hd5.php')">Manchester United x Brighton & Hove Albion</button>
+    </div>
+
+    <!-- WhatsApp Button -->
+    <a href="https://www.whatsapp.com/channel/0029Va7HlAILdQedLTmLYU0Z" id="whatsappButton">
+        Join WhatsApp Group
+    </a>
 
     <script>
-        const options = {
-            player_list: [
-                { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Ipswich Town x Manchester City" },
-                { "file": "https://v3.sportsonline.ps/channels/hd/hd2.php", "title": "Real Madrid x Las Palmas" },
-                { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Everton x Tottenham Hotspur" },
-                { "file": "https://v3.sportsonline.ps/channels/hd/hd5.php", "title": "Manchester United x Brighton & Hove Albion" }
-            ]
-        };
-
-        const player = document.getElementById("player");
-        const playlistContainer = document.getElementById("playlist");
-
-        function loadVideo(file) {
-            player.src = file;
+        // Load Stream
+        function loadStream(url) {
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.src = url;
+            videoPlayer.play();
         }
-
-        // Generate Playlist Buttons
-        options.player_list.forEach(video => {
-            const button = document.createElement("button");
-            button.textContent = video.title;
-            button.onclick = () => loadVideo(video.file);
-            playlistContainer.appendChild(button);
-        });
-
-        // Auto-load the first video
-        window.onload = () => {
-            loadVideo(options.player_list[0].file);
-        };
     </script>
 </body>
 </html>
+
 
 
 
