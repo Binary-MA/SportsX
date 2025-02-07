@@ -6,6 +6,7 @@
     <meta name="description" content="Stream live sports matches effortlessly on any device. Join our WhatsApp group for the latest updates.">
     <meta name="keywords" content="sports streaming, live matches, watch football, WhatsApp sports updates">
     <title>Sports Streaming</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> <!-- HLS.js for M3U8 playback -->
     <style>
         .instruction-box, #playerContainer {
             width: 100%;
@@ -125,27 +126,55 @@
 const options = {
     player_list: [
         { "file": "https://zbpull3.hrbjucheng.com/live/8902803216851063950.m3u8", "title": "Al Nassr Live", "type": "m3u8" },
-        
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd5.php", "title": "Liverpool x Ipswich Town", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Wolverhampton Wanderers x Arsenal", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Manchester City x Chelsea", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd6.php", "title": "Real Valladolid x Real Madrid", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd2.php", "title": "Atlético Madrid x Villarreal", "type": "php" }
+    ]
 };
 
 function loadVideo(videoFile, type) {
     document.getElementById("loadingMessage").style.display = "block";
+
     if (type === "m3u8") {
-        document.getElementById("videoPlayer").oncanplay = function() {
+        const video = document.getElementById("videoPlayer");
+        const iframe = document.getElementById("playerIframe");
+
+        iframe.style.display = "none";
+        video.style.display = "block";
+
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoFile);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play();
+                document.getElementById("loadingMessage").style.display = "none";
+            });
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+            video.src = videoFile;
+            video.addEventListener("canplay", () => {
+                video.play();
+                document.getElementById("loadingMessage").style.display = "none";
+            });
+        } else {
+            alert("Your browser does not support M3U8 playback.");
             document.getElementById("loadingMessage").style.display = "none";
-        };
-        document.getElementById("videoPlayer").style.display = "block";
-        document.getElementById("playerIframe").style.display = "none";
-        document.getElementById("videoPlayer").src = videoFile;
-        document.getElementById("videoPlayer").play();
+        }
     } else if (type === "php") {
-        document.getElementById("playerIframe").onload = function() {
+        const iframe = document.getElementById("playerIframe");
+        const video = document.getElementById("videoPlayer");
+
+        iframe.style.display = "block";
+        video.style.display = "none";
+        iframe.src = videoFile;
+
+        iframe.onload = function() {
             document.getElementById("loadingMessage").style.display = "none";
         };
-        document.getElementById("playerIframe").style.display = "block";
-        document.getElementById("videoPlayer").style.display = "none";
-        document.getElementById("playerIframe").src = videoFile;
     }
+
     document.getElementById("videoPlayer").onerror = function() {
         alert("Failed to load the video. Please try another link.");
         document.getElementById("loadingMessage").style.display = "none";
