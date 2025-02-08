@@ -6,7 +6,6 @@
     <meta name="description" content="Stream live sports matches effortlessly on any device. Join our WhatsApp group for the latest updates.">
     <meta name="keywords" content="sports streaming, live matches, watch football, WhatsApp sports updates">
     <title>Sports Streaming</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> <!-- HLS.js for M3U8 playback -->
     <style>
         .instruction-box, #playerContainer {
             width: 100%;
@@ -33,7 +32,7 @@
             height: 250px;
         }
 
-        #videoPlayer, #playerIframe {
+        #playerIframe {
             width: 100%;
             height: 100%;
             display: block;
@@ -115,7 +114,6 @@
 
 <div id="playerContainer">
     <iframe id="playerIframe" src="" style="display: none;" sandbox="allow-scripts allow-same-origin"></iframe>
-    <video id="videoPlayer" controls autoplay style="display: none;"></video>
 </div>
 
 <div id="playlist"></div>
@@ -125,57 +123,33 @@
 <script type="text/javascript">
 const options = {
     player_list: [
-        { "file": "https://mut1.mylife1.top:8088/live/webcricm04/playlist.m3u8?vidictid=201277957972&id=114515&pk=f2a0b8e8da9ff5c7305afab856bbf6349d474d7964b3e20318f6c218c6c5f3c53ecf39e89879fe5bd490f2f1ec019803b0d330348e5e9d6fd540fce8af0c33d1", "title": "Al Nassr Live", "type": "m3u8" },
-        { "file": "https://v3.sportsonline.ps/channels/hd/hd5.php", "title": "Liverpool x Ipswich Town", "type": "php" },
-        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Wolverhampton Wanderers x Arsenal", "type": "php" },
-        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Manchester City x Chelsea", "type": "php" },
-        { "file": "https://v3.sportsonline.ps/channels/hd/hd6.php", "title": "Real Valladolid x Real Madrid", "type": "php" },
-        { "file": "https://v3.sportsonline.ps/channels/hd/hd2.php", "title": "Atlético Madrid x Villarreal", "type": "php" }
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "12:15 Leyton Orient x Manchester City", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd2.php", "title": "20:00 Sevilla x Barcelona", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "17:35 Aston Villa x Tottenham Hotspur", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd2.php", "title": "20:00 Real Madrid x Atlético Madrid", "type": "php" },
+        { "file": "https://v3.sportsonline.ps/channels/hd/hd1.php", "title": "Manchester United x Leicester City", "type": "php" },
+        { "file": "https://www.hlsplayer.net/embed?type=m3u8&src=https://mut1.mylife1.top:8088/live/webcricm04/playlist.m3u8?vidictid=201277957972&id=114515&pk=f2a0b8e8da9ff5c7305afab856bbf6349d474d7964b3e20318f6c218c6c5f3c53ecf39e89879fe5bd490f2f1ec019803b0d330348e5e9d6fd540fce8af0c33d1", "title": "Al Nassr Live", "type": "m3u8" }
     ]
 };
 
 function loadVideo(videoFile, type) {
     document.getElementById("loadingMessage").style.display = "block";
-
+    
     if (type === "m3u8") {
-        const video = document.getElementById("videoPlayer");
-        const iframe = document.getElementById("playerIframe");
-
-        iframe.style.display = "none";
-        video.style.display = "block";
-
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(videoFile);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play();
-                document.getElementById("loadingMessage").style.display = "none";
-            });
-        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-            video.src = videoFile;
-            video.addEventListener("canplay", () => {
-                video.play();
-                document.getElementById("loadingMessage").style.display = "none";
-            });
-        } else {
-            alert("Your browser does not support M3U8 playback.");
-            document.getElementById("loadingMessage").style.display = "none";
-        }
-    } else if (type === "php") {
-        const iframe = document.getElementById("playerIframe");
-        const video = document.getElementById("videoPlayer");
-
-        iframe.style.display = "block";
-        video.style.display = "none";
-        iframe.src = videoFile;
-
-        iframe.onload = function() {
+        document.getElementById("playerIframe").onload = function() {
             document.getElementById("loadingMessage").style.display = "none";
         };
+        document.getElementById("playerIframe").style.display = "block";
+        document.getElementById("playerIframe").src = videoFile;
+    } else if (type === "php") {
+        document.getElementById("playerIframe").onload = function() {
+            document.getElementById("loadingMessage").style.display = "none";
+        };
+        document.getElementById("playerIframe").style.display = "block";
+        document.getElementById("playerIframe").src = videoFile;
     }
 
-    document.getElementById("videoPlayer").onerror = function() {
+    document.getElementById("playerIframe").onerror = function() {
         alert("Failed to load the video. Please try another link.");
         document.getElementById("loadingMessage").style.display = "none";
     };
