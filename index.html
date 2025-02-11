@@ -35,7 +35,7 @@
         #playerIframe {
             width: 100%;
             height: 100%;
-            display: none;
+            display: block;
         }
 
         .whatsapp-button {
@@ -110,10 +110,10 @@
     Instructions: Select a match from the buttons below to start streaming. If the video doesn’t load immediately, please wait a few seconds and try again.
 </div>
 
-<div id="loadingMessage" style="display: none; text-align: center; color: #333;">Loading stream...</div>
+<div id="loadingMessage" style="display: none;">Loading stream...</div>
 
 <div id="playerContainer">
-    <iframe id="playerIframe" src=""></iframe>
+    <iframe id="playerIframe" src="" style="display: none;" sandbox="allow-scripts allow-same-origin"></iframe>
 </div>
 
 <div id="playlist"></div>
@@ -126,28 +126,31 @@ const options = {
         { "file": "https://sportzonline.si/channels/hd/hd1.php", "title": "19:30 Everton x Liverpool", "type": "php" },
         { "file": "https://sportzonline.si/channels/pt/sporttv1.php", "title": "17:30 Al Ahli x Al Nassr", "type": "php" },
         { "file": "https://sportzonline.si/channels/hd/hd5.php", "title": "20:00 Manchester City x Real Madrid", "type": "php" },
-        { "file": "https://zbpull3.zhubaicheng.com/live/9330806561535201909.m3u8", "title": "20:00 Manchester City x Real Madrid", "type": "m3u8" }
+        { "file": "https://zbpull3.zhubaicheng.com/live/9330806561535201909.m3u8", "title": "Manchester City x Real Madrid", "type": "m3u8" }
     ]
 };
 
 function loadVideo(videoFile, type) {
-    const playerIframe = document.getElementById("playerIframe");
-    const loadingMessage = document.getElementById("loadingMessage");
+    document.getElementById("loadingMessage").style.display = "block";
+    
+    if (type === "m3u8") {
+        document.getElementById("playerIframe").onload = function() {
+            document.getElementById("loadingMessage").style.display = "none";
+        };
+        document.getElementById("playerIframe").style.display = "block";
+        document.getElementById("playerIframe").src = videoFile;
+    } else if (type === "php") {
+        document.getElementById("playerIframe").onload = function() {
+            document.getElementById("loadingMessage").style.display = "none";
+        };
+        document.getElementById("playerIframe").style.display = "block";
+        document.getElementById("playerIframe").src = videoFile;
+    }
 
-    loadingMessage.style.display = "block";
-    playerIframe.style.display = "none";
-
-    playerIframe.onload = function() {
-        loadingMessage.style.display = "none";
-        playerIframe.style.display = "block";
-    };
-
-    playerIframe.onerror = function() {
+    document.getElementById("playerIframe").onerror = function() {
         alert("Failed to load the video. Please try another link.");
-        loadingMessage.style.display = "none";
+        document.getElementById("loadingMessage").style.display = "none";
     };
-
-    playerIframe.src = videoFile;
 }
 
 const playlistContainer = document.getElementById("playlist");
@@ -160,11 +163,7 @@ options.player_list.forEach((video) => {
     playlistContainer.appendChild(button);
 });
 
-window.onload = function () {
-    if (options.player_list.length === 0) {
-        document.getElementById("playerContainer").innerHTML = "<p style='color: white; text-align: center;'>No available streams</p>";
-        return;
-    }
+window.onload = () => {
     const firstVideo = options.player_list[0];
     loadVideo(firstVideo.file, firstVideo.type);
 };
