@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Match Streaming</title>
+    <title>Live Sports Stream</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,19 +38,6 @@
             height: 100%;
             border: none;
             display: block;
-        }
-
-        #loadingMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 16px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 5px;
-            display: none;
         }
 
         #playlist {
@@ -99,17 +86,21 @@
             border: 1px solid #ccc;
             margin-top: 10px;
         }
+
+        /* Hide Ads */
+        iframe[src*="ads"], iframe[id*="ads"] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 
 <div class="instruction-box">
-    Click on a match name or video to play. If it stops, refresh or try an MX or VLC player etc. by clicking on (🔗).
+    Click on a match name to play. If it stops, refresh or try MX/VLC by clicking on (🔗).
 </div>
 
 <div id="playerContainer">
-    <div id="loadingMessage">Loading... 0%</div>
-    <iframe id="phpPlayer" sandbox="allow-scripts allow-same-origin allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
+    <iframe id="phpPlayer" allow="autoplay"></iframe>
 </div>
 
 <div id="playlist"></div>
@@ -133,27 +124,12 @@
 
     function loadVideo(url) {
         const playerFrame = document.getElementById("phpPlayer");
-        const loadingMessage = document.getElementById("loadingMessage");
-
-        loadingMessage.style.display = "block";
-        playerFrame.style.display = "none";
-        playerFrame.src = "";
-
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 10;
-            loadingMessage.textContent = `Loading... ${progress}%`;
-            if (progress >= 100) {
-                clearInterval(interval);
-                loadingMessage.style.display = "none";
-                playerFrame.style.display = "block";
-                playerFrame.src = url;
-            }
-        }, 300);
+        playerFrame.src = url;
     }
 
-    function openExternal(url) {
-        window.location.href = `intent:${url}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
+    function openExternal(m3u8, php) {
+        const streamURL = m3u8 ? m3u8 : php;
+        window.location.href = `intent:${streamURL}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
     }
 
     function renderMatches() {
@@ -172,29 +148,13 @@
             const externalButton = document.createElement("button");
             externalButton.classList.add("external-button");
             externalButton.textContent = "🔗";
-            externalButton.onclick = () => openExternal(match.link);
+            externalButton.onclick = () => openExternal(match.m3u8, match.link);
 
             matchItem.appendChild(matchButton);
             matchItem.appendChild(externalButton);
             playlistDiv.appendChild(matchItem);
         });
     }
-
-    function blockAds() {
-        let iframe = document.getElementById("phpPlayer").contentWindow.document;
-
-        let popups = iframe.querySelectorAll("[id*=popup], [class*=ad]");
-        popups.forEach(el => el.remove());
-
-        let overlays = iframe.querySelectorAll("[class*=overlay]");
-        overlays.forEach(el => el.style.display = "none");
-    }
-
-    setInterval(() => {
-        try {
-            blockAds();
-        } catch (e) {}
-    }, 2000);
 
     window.onload = function() {
         renderMatches();
