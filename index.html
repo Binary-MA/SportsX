@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Football Streams</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>Live Match Streaming</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,15 +37,7 @@
             width: 100%;
             height: 100%;
             border: none;
-            display: none;
-            sandbox="allow-scripts allow-same-origin allow-popups-to-escape-sandbox"
-        }
-
-        video {
-            width: 100%;
-            height: 250px;
-            display: none;
-            background-color: black;
+            display: block;
         }
 
         #loadingMessage {
@@ -86,92 +77,68 @@
             text-align: left;
         }
 
-        .m3u8-button {
+        .external-button {
             padding: 5px 8px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
             background-color: white;
-            color: blue;
+            color: orange;
             margin-left: 5px;
         }
 
         .whatsapp-button {
+            display: inline-block;
             background-color: #25D366;
             color: white;
-            font-size: 16px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
+            padding: 8px 12px;
+            font-size: 14px;
             text-decoration: none;
-            display: inline-block;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="instruction-box">
-    Click on a match name or 📺 to play. If it stops, refresh or try again.
+    Click on a match name or video to play. If it stops, refresh or try an MX or VLC player etc. by clicking on (🔗).
 </div>
 
 <div id="playerContainer">
     <div id="loadingMessage">Loading... 0%</div>
-    <iframe id="phpPlayer"></iframe>
-    <video id="m3u8Player" controls autoplay></video>
+    <iframe id="phpPlayer" sandbox="allow-scripts allow-same-origin allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe>
 </div>
 
 <div id="playlist"></div>
 
-<a id="whatsappShare" class="whatsapp-button" href="#" target="_blank">📢 Share on WhatsApp</a>
+<a href="https://chat.whatsapp.com/YOUR-GROUP-LINK" class="whatsapp-button">
+    Join WhatsApp Group
+</a>
 
 <script>
     const matches = [
-        { name: "Barcelona x Atlético Madrid", php: "https://sportzonline.si/channels/hd/hd2.php", m3u8: "https://example.com/barca.m3u8" },
-        { name: "Chelsea x Southampton", php: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "https://example.com/chelsea.m3u8" },
-        { name: "Al Wehda x Al Nassr", php: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "https://example.com/alwehda.m3u8" },
-        { name: "Inter Miami x Sporting KC", php: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "https://example.com/miami.m3u8" },
-        { name: "Tottenham Hotspur x Manchester City", php: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "https://example.com/spurs.m3u8" },
-        { name: "Manchester United x Ipswich Town", php: "https://sportzonline.si/channels/hd/hd5.php", m3u8: "https://example.com/united.m3u8" },
-        { name: "Liverpool x Newcastle United", php: "https://sportzonline.si/channels/hd/hd9.php", m3u8: "https://example.com/liverpool.m3u8" },
-        { name: "Real Sociedad x Real Madrid", php: "https://sportzonline.si/channels/hd/hd6.php", m3u8: "https://example.com/madrid.m3u8" },
-        { name: "Al Orubah x Al Nassr", php: "https://sportzonline.si/channels/hd/hd11.php", m3u8: "https://example.com/alorubah.m3u8" }
+        { name: "Barcelona x Atlético Madrid", link: "https://sportzonline.si/channels/hd/hd2.php", m3u8: "" },
+        { name: "Chelsea x Southampton", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
+        { name: "Al Wehda x Al Nassr", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
+        { name: "Inter Miami x Sporting KC", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
+        { name: "Tottenham Hotspur x Manchester City", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
+        { name: "Manchester United x Ipswich Town", link: "https://sportzonline.si/channels/hd/hd5.php", m3u8: "" },
+        { name: "Liverpool x Newcastle United", link: "https://sportzonline.si/channels/hd/hd9.php", m3u8: "" },
+        { name: "Real Sociedad x Real Madrid", link: "https://sportzonline.si/channels/hd/hd6.php", m3u8: "" },
+        { name: "Al Orubah x Al Nassr", link: "https://sportzonline.si/channels/hd/hd11.php", m3u8: "" }
     ];
 
-    function loadPlaylist() {
-        const playlistContainer = document.getElementById("playlist");
-        matches.forEach(match => {
-            const matchItem = document.createElement("div");
-            matchItem.classList.add("match-item");
-
-            const matchButton = document.createElement("button");
-            matchButton.classList.add("match-button");
-            matchButton.textContent = match.name;
-            matchButton.onclick = () => loadPHPStream(match.php, match.name);
-
-            const m3u8Button = document.createElement("button");
-            m3u8Button.classList.add("m3u8-button");
-            m3u8Button.textContent = "📺";
-            m3u8Button.onclick = () => playM3U8(match.m3u8, match.name);
-
-            matchItem.appendChild(matchButton);
-            matchItem.appendChild(m3u8Button);
-            playlistContainer.appendChild(matchItem);
-        });
-    }
-
-    function loadPHPStream(url, matchName) {
-        const phpPlayer = document.getElementById("phpPlayer");
-        const m3u8Player = document.getElementById("m3u8Player");
+    function loadVideo(url) {
+        const playerFrame = document.getElementById("phpPlayer");
         const loadingMessage = document.getElementById("loadingMessage");
 
-        m3u8Player.style.display = "none";
-        phpPlayer.style.display = "block";
-        phpPlayer.src = "";
-
         loadingMessage.style.display = "block";
+        playerFrame.style.display = "none";
+        playerFrame.src = "";
+
         let progress = 0;
         const interval = setInterval(() => {
             progress += 10;
@@ -179,39 +146,59 @@
             if (progress >= 100) {
                 clearInterval(interval);
                 loadingMessage.style.display = "none";
-                phpPlayer.src = url;
-                updateWhatsApp(matchName);
+                playerFrame.style.display = "block";
+                playerFrame.src = url;
             }
         }, 300);
     }
 
-    function playM3U8(url, matchName) {
-        const phpPlayer = document.getElementById("phpPlayer");
-        const video = document.getElementById("m3u8Player");
-
-        phpPlayer.style.display = "none";
-        video.style.display = "block";
-
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(video);
-        } else {
-            video.src = url;
-        }
-
-        updateWhatsApp(matchName);
+    function openExternal(url) {
+        window.location.href = `intent:${url}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
     }
 
-    function updateWhatsApp(matchName) {
-        const whatsappButton = document.getElementById("whatsappShare");
-        const message = `Watch ${matchName} live now! ⚽🔥`;
-        const url = encodeURIComponent(window.location.href);
-        whatsappButton.href = `https://wa.me/?text=${encodeURIComponent(message)}%20${url}`;
+    function renderMatches() {
+        const playlistDiv = document.getElementById("playlist");
+        playlistDiv.innerHTML = "";
+
+        matches.forEach(match => {
+            const matchItem = document.createElement("div");
+            matchItem.classList.add("match-item");
+
+            const matchButton = document.createElement("button");
+            matchButton.classList.add("match-button");
+            matchButton.textContent = match.name;
+            matchButton.onclick = () => loadVideo(match.link);
+
+            const externalButton = document.createElement("button");
+            externalButton.classList.add("external-button");
+            externalButton.textContent = "🔗";
+            externalButton.onclick = () => openExternal(match.link);
+
+            matchItem.appendChild(matchButton);
+            matchItem.appendChild(externalButton);
+            playlistDiv.appendChild(matchItem);
+        });
     }
+
+    function blockAds() {
+        let iframe = document.getElementById("phpPlayer").contentWindow.document;
+
+        let popups = iframe.querySelectorAll("[id*=popup], [class*=ad]");
+        popups.forEach(el => el.remove());
+
+        let overlays = iframe.querySelectorAll("[class*=overlay]");
+        overlays.forEach(el => el.style.display = "none");
+    }
+
+    setInterval(() => {
+        try {
+            blockAds();
+        } catch (e) {}
+    }, 2000);
 
     window.onload = function() {
-        loadPlaylist();
+        renderMatches();
+        loadVideo(matches[0].link);
     };
 </script>
 
