@@ -38,7 +38,6 @@
             height: 100%;
             border: none;
             display: block;
-            sandbox="allow-scripts allow-same-origin";
         }
 
         #loadingMessage {
@@ -66,35 +65,27 @@
             margin: 10px 0;
         }
 
-        .match-button, .external-button, .m3u8-button {
+        .match-button {
             padding: 8px 12px;
             font-size: 14px;
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
             background-color: white;
+            color: black;
+            flex: 1;
+            text-align: left;
         }
 
         .external-button {
+            padding: 5px 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: white;
             color: orange;
             margin-left: 5px;
-        }
-
-        .m3u8-button {
-            color: blue;
-            margin-left: 5px;
-        }
-
-        .whatsapp-button {
-            display: inline-block;
-            background-color: #25D366;
-            color: white;
-            padding: 8px 12px;
-            font-size: 14px;
-            text-decoration: none;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -106,59 +97,65 @@
 
 <div id="playerContainer">
     <div id="loadingMessage">Loading... 0%</div>
-    <iframe id="playerFrame" allow="autoplay" src=""></iframe>
+    <iframe id="playerFrame" sandbox="allow-scripts allow-same-origin" src=""></iframe>
 </div>
 
 <div id="playlist">
-    <div class="match-item">
-        <button class="match-button" onclick="loadVideo('https://sportzonline.si/channels/hd/hd2.php')">
-            Barcelona x Atlético Madrid
-        </button>
-        <button class="external-button" onclick="openExternal('https://sportzonline.si/channels/hd/hd2.php')">🔗</button>
-        <button class="m3u8-button" onclick="alert('Add your M3U8 link here')">📺</button>
-    </div>
-    <div class="match-item">
-        <button class="match-button" onclick="loadVideo('https://sportzonline.si/channels/hd/hd1.php')">
-            Chelsea x Southampton
-        </button>
-        <button class="external-button" onclick="openExternal('https://sportzonline.si/channels/hd/hd1.php')">🔗</button>
-        <button class="m3u8-button" onclick="alert('Add your M3U8 link here')">📺</button>
-    </div>
+    <script>
+        const matches = [
+            { name: "Barcelona x Atlético Madrid", link: "https://sportzonline.si/channels/hd/hd2.php", m3u8: "" },
+            { name: "Chelsea x Southampton", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
+            { name: "Al Wehda x Al Nassr", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
+            { name: "Inter Miami x Sporting KC", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
+            { name: "Tottenham Hotspur x Manchester City", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
+            { name: "Manchester United x Ipswich Town", link: "https://sportzonline.si/channels/hd/hd5.php", m3u8: "" },
+            { name: "Liverpool x Newcastle United", link: "https://sportzonline.si/channels/hd/hd9.php", m3u8: "" },
+            { name: "Real Sociedad x Real Madrid", link: "https://sportzonline.si/channels/hd/hd6.php", m3u8: "" },
+            { name: "Al Orubah x Al Nassr", link: "https://sportzonline.si/channels/hd/hd11.php", m3u8: "" }
+        ];
+
+        function loadVideo(url) {
+            const playerFrame = document.getElementById("playerFrame");
+            const loadingMessage = document.getElementById("loadingMessage");
+
+            loadingMessage.style.display = "block";
+            playerFrame.style.display = "none";
+            playerFrame.src = "";
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                loadingMessage.textContent = `Loading... ${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    loadingMessage.style.display = "none";
+                    playerFrame.style.display = "block";
+                    playerFrame.src = url;
+                }
+            }, 300);
+        }
+
+        function openExternal(url) {
+            window.location.href = `intent:${url}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;`;
+        }
+
+        document.write('<div>');
+        matches.forEach(match => {
+            document.write(`
+                <div class="match-item">
+                    <button class="match-button" onclick="loadVideo('${match.link}')">
+                        ${match.name}
+                    </button>
+                    <button class="external-button" onclick="openExternal('${match.link}')">
+                        🔗
+                    </button>
+                    <button class="external-button" onclick="openExternal('${match.m3u8}')">M3U8</button>
+                </div>
+            `);
+        });
+        document.write('</div>');
+    </script>
 </div>
-
-<a href="https://chat.whatsapp.com/YOUR-GROUP-LINK" class="whatsapp-button">
-    Join WhatsApp Group
-</a>
-
-<script>
-    function loadVideo(url) {
-        const playerFrame = document.getElementById("playerFrame");
-        const loadingMessage = document.getElementById("loadingMessage");
-        loadingMessage.style.display = "block";
-        playerFrame.style.display = "none";
-        playerFrame.src = "";
-
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 10;
-            loadingMessage.textContent = `Loading... ${progress}%`;
-            if (progress >= 100) {
-                clearInterval(interval);
-                loadingMessage.style.display = "none";
-                playerFrame.style.display = "block";
-                playerFrame.src = url + "?autoplay=1&muted=1";
-            }
-        }, 300);
-    }
-
-    function openExternal(url) {
-        window.location.href = `intent:${url}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;`;
-    }
-
-    window.onload = function() {
-        loadVideo('https://sportzonline.si/channels/hd/hd2.php');
-    };
-</script>
 
 </body>
 </html>
