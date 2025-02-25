@@ -39,6 +39,7 @@
             height: 100%;
             border: none;
             display: none;
+            sandbox="allow-scripts allow-same-origin allow-popups-to-escape-sandbox"
         }
 
         video {
@@ -95,6 +96,19 @@
             color: blue;
             margin-left: 5px;
         }
+
+        .whatsapp-button {
+            background-color: #25D366;
+            color: white;
+            font-size: 16px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +124,8 @@
 </div>
 
 <div id="playlist"></div>
+
+<a id="whatsappShare" class="whatsapp-button" href="#" target="_blank">📢 Share on WhatsApp</a>
 
 <script>
     const matches = [
@@ -133,12 +149,12 @@
             const matchButton = document.createElement("button");
             matchButton.classList.add("match-button");
             matchButton.textContent = match.name;
-            matchButton.onclick = () => loadPHPStream(match.php);
+            matchButton.onclick = () => loadPHPStream(match.php, match.name);
 
             const m3u8Button = document.createElement("button");
             m3u8Button.classList.add("m3u8-button");
             m3u8Button.textContent = "📺";
-            m3u8Button.onclick = () => playM3U8(match.m3u8);
+            m3u8Button.onclick = () => playM3U8(match.m3u8, match.name);
 
             matchItem.appendChild(matchButton);
             matchItem.appendChild(m3u8Button);
@@ -146,7 +162,7 @@
         });
     }
 
-    function loadPHPStream(url) {
+    function loadPHPStream(url, matchName) {
         const phpPlayer = document.getElementById("phpPlayer");
         const m3u8Player = document.getElementById("m3u8Player");
         const loadingMessage = document.getElementById("loadingMessage");
@@ -164,11 +180,12 @@
                 clearInterval(interval);
                 loadingMessage.style.display = "none";
                 phpPlayer.src = url;
+                updateWhatsApp(matchName);
             }
         }, 300);
     }
 
-    function playM3U8(url) {
+    function playM3U8(url, matchName) {
         const phpPlayer = document.getElementById("phpPlayer");
         const video = document.getElementById("m3u8Player");
 
@@ -182,6 +199,15 @@
         } else {
             video.src = url;
         }
+
+        updateWhatsApp(matchName);
+    }
+
+    function updateWhatsApp(matchName) {
+        const whatsappButton = document.getElementById("whatsappShare");
+        const message = `Watch ${matchName} live now! ⚽🔥`;
+        const url = encodeURIComponent(window.location.href);
+        whatsappButton.href = `https://wa.me/?text=${encodeURIComponent(message)}%20${url}`;
     }
 
     window.onload = function() {
