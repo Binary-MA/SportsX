@@ -3,165 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CricX Stream</title>
+    <title>Live Sports Streaming</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
+            background-color: #f4f4f4;
         }
-
-        .instruction-box {
-            font-size: 14px;
-            background-color: #fffae5;
-            border: 2px solid #ffce00;
-            padding: 8px;
+        .match {
+            background: #fff;
+            padding: 15px;
             margin: 10px auto;
+            border-radius: 8px;
             width: 90%;
-            border-radius: 5px;
-            font-weight: bold;
+            max-width: 400px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
-        #playerContainer {
-            width: 100%;
-            max-width: 100%;
-            height: 250px;
-            background-color: black;
-            margin: 10px auto;
-            position: relative;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
+        .btn {
+            display: inline-block;
+            padding: 10px;
+            margin: 5px;
             border: none;
-            display: block;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
         }
-
-        #loadingMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .vlc {
+            background-color: #ff6600;
             color: white;
-            font-size: 16px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 5px;
-            display: none;
         }
-
-        #playlist {
+        .m3u8 {
+            background-color: #007bff;
+            color: white;
+        }
+        .whatsapp {
+            background-color: #25D366;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            display: block;
+            margin: 20px auto;
             width: 90%;
-            margin: 10px auto;
+            max-width: 400px;
+            text-align: center;
         }
-
-        .match-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 10px 0;
-        }
-
-        .match-button {
-            padding: 8px 12px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: white;
-            color: black;
-            flex: 1;
-            text-align: left;
-        }
-
-        .external-button {
-            padding: 5px 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: white;
-            color: orange;
-            margin-left: 5px;
-        }
-
-        iframe[src*="ads"], iframe[src*="banner"] {
-            display: none !important;
+        .btn img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
         }
     </style>
+    <script>
+        // Ad Blocker
+        document.addEventListener("DOMContentLoaded", function () {
+            const adSelectors = ["iframe", "ads", ".ad", ".adsense", "[id*=ads]", "[class*=ads]"];
+            adSelectors.forEach(selector => {
+                document.querySelectorAll(selector).forEach(ad => ad.remove());
+            });
+        });
+    </script>
 </head>
 <body>
-
-<div class="instruction-box">
-    Click on a match name or video to play. If it stops, refresh or try an MX or VLC player etc. by clicking on (🔗).
-</div>
-
-<div id="playerContainer">
-    <div id="loadingMessage">Loading... 0%</div>
-    <iframe id="playerFrame" sandbox="allow-scripts allow-same-origin" src=""></iframe>
-</div>
-
-<div id="playlist">
     <script>
         const matches = [
-            { name: "Barcelona x Atlético Madrid", link: "https://sportzonline.si/channels/hd/hd2.php", m3u8: "" },
-            { name: "Chelsea x Southampton", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
-            { name: "Al Wehda x Al Nassr", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
-            { name: "Inter Miami x Sporting KC", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
-            { name: "Tottenham Hotspur x Manchester City", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
-            { name: "Manchester United x Ipswich Town", link: "https://sportzonline.si/channels/hd/hd5.php", m3u8: "" },
-            { name: "Liverpool x Newcastle United", link: "https://sportzonline.si/channels/hd/hd9.php", m3u8: "" },
-            { name: "Real Sociedad x Real Madrid", link: "https://sportzonline.si/channels/hd/hd6.php", m3u8: "" },
-            { name: "Al Orubah x Al Nassr", link: "https://sportzonline.si/channels/hd/hd11.php", m3u8: "" }
+            { name: "Barcelona x Atlético Madrid", link: "https://sportzonline.si/channels/hd/hd2.php", m3u8: "https://sportzonline.si/play/live2.m3u8" },
+            { name: "Chelsea x Southampton", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "https://sportzonline.si/play/live1.m3u8" },
+            { name: "Al Wehda x Al Nassr", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "https://sportzonline.si/play/live8.m3u8" },
+            { name: "Inter Miami x Sporting KC", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "https://sportzonline.si/play/live8.m3u8" },
+            { name: "Tottenham Hotspur x Manchester City", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "https://sportzonline.si/play/live1.m3u8" },
+            { name: "Manchester United x Ipswich Town", link: "https://sportzonline.si/channels/hd/hd5.php", m3u8: "https://sportzonline.si/play/live5.m3u8" },
+            { name: "Liverpool x Newcastle United", link: "https://sportzonline.si/channels/hd/hd9.php", m3u8: "https://sportzonline.si/play/live9.m3u8" },
+            { name: "Real Sociedad x Real Madrid", link: "https://sportzonline.si/channels/hd/hd6.php", m3u8: "https://sportzonline.si/play/live6.m3u8" },
+            { name: "Al Orubah x Al Nassr", link: "https://sportzonline.si/channels/hd/hd11.php", m3u8: "https://sportzonline.si/play/live11.m3u8" }
         ];
 
-        function loadVideo(url) {
-            const playerFrame = document.getElementById("playerFrame");
-            const loadingMessage = document.getElementById("loadingMessage");
-
-            loadingMessage.style.display = "block";
-            playerFrame.style.display = "none";
-            playerFrame.src = "";
-
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                loadingMessage.textContent = `Loading... ${progress}%`;
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    loadingMessage.style.display = "none";
-                    playerFrame.style.display = "block";
-                    playerFrame.src = url;
-                }
-            }, 300);
-        }
-
-        function openExternal(url) {
-            window.location.href = `intent:${url}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;`;
-        }
-
-        document.write('<div>');
-        matches.forEach(match => {
-            document.write(`
-                <div class="match-item">
-                    <button class="match-button" onclick="loadVideo('${match.link}')">
-                        ${match.name}
-                    </button>
-                    <button class="external-button" onclick="openExternal('${match.link}')">
-                        🔗
-                    </button>
-                    <button class="external-button" onclick="openExternal('${match.m3u8}')">M3U8</button>
-                </div>
-            `);
-        });
-        document.write('</div>');
+        document.write(matches.map(match => `
+            <div class="match">
+                <p>${match.name}</p>
+                <a href="${match.link}" class="btn vlc"><img src="vlc-icon.png" alt="VLC">VLC</a>
+                <a href="${match.m3u8}" class="btn m3u8">M3U8</a>
+            </div>
+        `).join(""));
     </script>
-</div>
-
-<button class="external-button" onclick="window.location.href='YOUR WHATSAPP CHANNEL LINK'">Join WhatsApp Group</button>
-
+    <a href="YOUR_WHATSAPP_LINK" class="btn whatsapp">Join Our WhatsApp Group for Updates</a>
 </body>
 </html>
