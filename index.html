@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CricX Stream</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,6 +39,13 @@
             height: 100%;
             border: none;
             display: block;
+        }
+
+        #m3u8Player {
+            width: 100%;
+            height: 250px;
+            display: none;
+            background-color: black;
         }
 
         #loadingMessage {
@@ -77,15 +85,22 @@
             text-align: left;
         }
 
-        .external-button {
+        .external-button, .m3u8-button {
             padding: 5px 8px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
             background-color: white;
-            color: orange;
             margin-left: 5px;
+        }
+
+        .external-button {
+            color: orange;
+        }
+
+        .m3u8-button {
+            color: blue;
         }
 
         .whatsapp-button {
@@ -110,6 +125,7 @@
 <div id="playerContainer">
     <div id="loadingMessage">Loading... 0%</div>
     <iframe id="playerFrame" allow="autoplay" src=""></iframe>
+    <video id="m3u8Player" controls autoplay></video>
 </div>
 
 <div id="playlist"></div>
@@ -120,15 +136,15 @@
 
 <script>
     const matches = [
-        { name: "Barcelona x Atlético Madrid", link: "https://sportzonline.si/channels/hd/hd2.php", m3u8: "" },
-        { name: "Chelsea x Southampton", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
-        { name: "Al Wehda x Al Nassr", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
-        { name: "Inter Miami x Sporting KC", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "" },
-        { name: "Tottenham Hotspur x Manchester City", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "" },
-        { name: "Manchester United x Ipswich Town", link: "https://sportzonline.si/channels/hd/hd5.php", m3u8: "" },
-        { name: "Liverpool x Newcastle United", link: "https://sportzonline.si/channels/hd/hd9.php", m3u8: "" },
-        { name: "Real Sociedad x Real Madrid", link: "https://sportzonline.si/channels/hd/hd6.php", m3u8: "" },
-        { name: "Al Orubah x Al Nassr", link: "https://sportzonline.si/channels/hd/hd11.php", m3u8: "" }
+        { name: "Barcelona x Atlético Madrid", link: "https://sportzonline.si/channels/hd/hd2.php", m3u8: "https://example.com/barca.m3u8" },
+        { name: "Chelsea x Southampton", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "https://example.com/chelsea.m3u8" },
+        { name: "Al Wehda x Al Nassr", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "https://example.com/alwehda.m3u8" },
+        { name: "Inter Miami x Sporting KC", link: "https://sportzonline.si/channels/hd/hd8.php", m3u8: "https://example.com/miami.m3u8" },
+        { name: "Tottenham Hotspur x Manchester City", link: "https://sportzonline.si/channels/hd/hd1.php", m3u8: "https://example.com/spurs.m3u8" },
+        { name: "Manchester United x Ipswich Town", link: "https://sportzonline.si/channels/hd/hd5.php", m3u8: "https://example.com/united.m3u8" },
+        { name: "Liverpool x Newcastle United", link: "https://sportzonline.si/channels/hd/hd9.php", m3u8: "https://example.com/liverpool.m3u8" },
+        { name: "Real Sociedad x Real Madrid", link: "https://sportzonline.si/channels/hd/hd6.php", m3u8: "https://example.com/madrid.m3u8" },
+        { name: "Al Orubah x Al Nassr", link: "https://sportzonline.si/channels/hd/hd11.php", m3u8: "https://example.com/alorubah.m3u8" }
     ];
 
     function loadPlaylist() {
@@ -140,42 +156,69 @@
             const matchButton = document.createElement("button");
             matchButton.classList.add("match-button");
             matchButton.textContent = match.name;
-            matchButton.onclick = () => loadVideo(match.link);
+            matchButton.onclick = () => loadVideo(match.link, match.m3u8);
 
             const externalButton = document.createElement("button");
             externalButton.classList.add("external-button");
             externalButton.textContent = "🔗";
             externalButton.onclick = () => openExternal(match.link);
 
+            const m3u8Button = document.createElement("button");
+            m3u8Button.classList.add("m3u8-button");
+            m3u8Button.textContent = "📺";
+            m3u8Button.onclick = () => playM3U8(match.m3u8);
+
             matchItem.appendChild(matchButton);
             matchItem.appendChild(externalButton);
+            matchItem.appendChild(m3u8Button);
             playlistContainer.appendChild(matchItem);
         });
     }
 
-    function loadVideo(url) {
-        const playerFrame = document.getElementById("playerFrame");
-        const loadingMessage = document.getElementById("loadingMessage");
+    function loadVideo(url, m3u8) {
+        if (m3u8) {
+            playM3U8(m3u8);
+        } else {
+            const playerFrame = document.getElementById("playerFrame");
+            const loadingMessage = document.getElementById("loadingMessage");
 
-        loadingMessage.style.display = "block";
-        playerFrame.style.display = "none";
-        playerFrame.src = "";
+            document.getElementById("m3u8Player").style.display = "none";
+            playerFrame.style.display = "block";
 
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 10;
-            loadingMessage.textContent = `Loading... ${progress}%`;
-            if (progress >= 100) {
-                clearInterval(interval);
-                loadingMessage.style.display = "none";
-                playerFrame.style.display = "block";
-                playerFrame.src = url + "?autoplay=1&muted=1";
-            }
-        }, 300);
+            loadingMessage.style.display = "block";
+            playerFrame.style.display = "none";
+            playerFrame.src = "";
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                loadingMessage.textContent = `Loading... ${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    loadingMessage.style.display = "none";
+                    playerFrame.style.display = "block";
+                    playerFrame.src = url + "?autoplay=1&muted=1";
+                }
+            }, 300);
+        }
+    }
+
+    function playM3U8(url) {
+        const video = document.getElementById("m3u8Player");
+        document.getElementById("playerFrame").style.display = "none";
+        video.style.display = "block";
+
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(video);
+        } else {
+            video.src = url;
+        }
     }
 
     function openExternal(url) {
-        window.location.href = `intent:${url}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
+        window.location.href = url;
     }
 
     window.onload = function() {
