@@ -40,6 +40,11 @@
             display: block;
         }
 
+        /* Sandbox iframe to block ads */
+        #phpPlayer {
+            sandbox="allow-same-origin allow-scripts";
+        }
+
         #playlist {
             width: 90%;
             margin: 10px auto;
@@ -88,8 +93,24 @@
         }
 
         /* Hide Ads */
-        iframe[src*="ads"], iframe[id*="ads"] {
+        iframe[src*="ads"], 
+        iframe[id*="ads"],
+        iframe[name*="ads"],
+        iframe[class*="ads"],
+        div[id*="ads"],
+        div[class*="ads"],
+        a[href*="ads"],
+        ins,
+        .ad-banner,
+        .ad-container {
             display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* Prevent ad overlays */
+        body > *:not(#playerContainer):not(#playlist):not(.instruction-box):not(.whatsapp-button) {
+            z-index: 99999 !important;
+            position: relative;
         }
     </style>
 </head>
@@ -100,7 +121,7 @@
 </div>
 
 <div id="playerContainer">
-    <iframe id="phpPlayer" allow="autoplay"></iframe>
+    <iframe id="phpPlayer" allow="autoplay" sandbox="allow-same-origin allow-scripts"></iframe>
 </div>
 
 <div id="playlist"></div>
@@ -110,13 +131,12 @@
 </a>
 
 <script>
-    const matches =[
-    { "name": "Real Betis x Real Madrid", "link": "https://sportzonline.si/channels/hd/hd2.php", "m3u8": "" },
-    { "name": "Manchester City x Plymouth Argyle", "link": "https://sportzonline.si/channels/hd/hd1.php", "m3u8": "" },
-    { "name": "Barcelona x Real Sociedad", "link": "https://sportzonline.si/channels/hd/hd2.php", "m3u8": "" },
-    { "name": "Manchester United x Fulham", "link": "https://sportzonline.si/channels/hd/hd1.php", "m3u8": "" }
-]
-
+    const matches = [
+        { "name": "Real Betis x Real Madrid", "link": "https://sportzonline.si/channels/hd/hd2.php", "m3u8": "" },
+        { "name": "Manchester City x Plymouth Argyle", "link": "https://sportzonline.si/channels/hd/hd1.php", "m3u8": "" },
+        { "name": "Barcelona x Real Sociedad", "link": "https://sportzonline.si/channels/hd/hd2.php", "m3u8": "" },
+        { "name": "Manchester United x Fulham", "link": "https://sportzonline.si/channels/hd/hd1.php", "m3u8": "" }
+    ];
 
     function loadVideo(url) {
         const playerFrame = document.getElementById("phpPlayer");
@@ -152,9 +172,21 @@
         });
     }
 
+    // Remove ad-related iframes and divs dynamically
+    function blockAds() {
+        setInterval(() => {
+            document.querySelectorAll('iframe, div, a, ins').forEach(element => {
+                if (element.src?.includes("ads") || element.id.includes("ads") || element.className.includes("ads")) {
+                    element.remove();
+                }
+            });
+        }, 1000);
+    }
+
     window.onload = function() {
         renderMatches();
         loadVideo(matches[0].link);
+        blockAds();
     };
 </script>
 
