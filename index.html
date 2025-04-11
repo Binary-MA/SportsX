@@ -1,221 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Sports Stream</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Sports Stream</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
 
-        .instruction-box {
-            font-size: 14px;
-            background-color: #fffae5;
-            border: 2px solid #ffce00;
-            padding: 8px;
-            margin: 10px auto;
-            width: 90%;
-            border-radius: 5px;
-            font-weight: bold;
-        }
+    .instruction-box {
+      font-size: 14px;
+      background-color: #fffae5;
+      border: 2px solid #ffce00;
+      padding: 8px;
+      margin: 10px auto;
+      width: 90%;
+      border-radius: 5px;
+      font-weight: bold;
+    }
 
-        #playerContainer {
-            width: 100%;
-            max-width: 100%;
-            height: 250px;
-            background-color: black;
-            margin: 10px auto;
-            position: relative;
-        }
+    #playerContainer {
+      width: 100%;
+      max-width: 100%;
+      height: 250px;
+      background-color: black;
+      margin: 10px auto;
+      position: relative;
+    }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
 
-        /* Sandbox iframe to block ads */
-        #phpPlayer {
-            sandbox="allow-same-origin allow-scripts";
-        }
+    #playlist {
+      width: 90%;
+      margin: 10px auto;
+    }
 
-        #playlist {
-            width: 90%;
-            margin: 10px auto;
-        }
+    .match-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+    }
 
-        .match-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 10px 0;
-        }
+    .match-button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: white;
+      color: black;
+      flex: 1;
+      text-align: left;
+    }
 
-        .match-button {
-            padding: 8px 12px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: white;
-            color: black;
-            flex: 1;
-            text-align: left;
-        }
+    .external-button {
+      padding: 5px 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: white;
+      color: orange;
+      margin-left: 5px;
+    }
 
-        .external-button {
-            padding: 5px 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: white;
-            color: orange;
-            margin-left: 5px;
-        }
+    .whatsapp-button {
+      display: inline-block;
+      background-color: #25D366;
+      color: white;
+      padding: 15px 12px;
+      font-size: 14px;
+      text-decoration: none;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
 
-        .whatsapp-button {
-            display: inline-block;
-            background-color: #25D366;
-            color: white;
-            padding: 15px 12px;
-            font-size: 14px;
-            text-decoration: none;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-top: 10px;
-        }
+    /* Hide Ads via CSS */
+    iframe[src*="ads"],
+    iframe[id*="ads"],
+    iframe[name*="ads"],
+    iframe[class*="ads"],
+    div[id*="ads"],
+    div[class*="ads"],
+    a[href*="ads"],
+    ins,
+    .ad-banner,
+    .ad-container {
+      display: none !important;
+      visibility: hidden !important;
+    }
 
-        /* Hide Ads */
-        iframe[src*="ads"], 
-        iframe[id*="ads"],
-        iframe[name*="ads"],
-        iframe[class*="ads"],
-        div[id*="ads"],
-        div[class*="ads"],
-        a[href*="ads"],
-        ins,
-        .ad-banner,
-        .ad-container {
-            display: none !important;
-            visibility: hidden !important;
-        }
-
-        /* Prevent ad overlays */
-        body > *:not(#playerContainer):not(#playlist):not(.instruction-box):not(.whatsapp-button) {
-            z-index: 99999 !important;
-            position: relative;
-        }
-    </style>
+    /* Prevent overlays above player */
+    body > *:not(#playerContainer):not(#playlist):not(.instruction-box):not(.whatsapp-button) {
+      z-index: 99999 !important;
+      position: relative;
+    }
+  </style>
 </head>
 <body>
 
 <div class="instruction-box">
-    Click on a match name to play. If it stops, refresh or try MX/VLC by clicking on (🔗).
+  Click on a match name to play. If it stops, refresh or try MX/VLC by clicking on (🔗).
 </div>
 
 <div id="playerContainer">
-    <iframe id="phpPlayer" allow="autoplay" sandbox="allow-same-origin allow-scripts"></iframe>
+  <iframe id="phpPlayer" allow="autoplay" sandbox="allow-same-origin allow-scripts"></iframe>
 </div>
 
 <div id="playlist"></div>
 
 <a href="https://whatsapp.com/channel/0029Vb32mMt23n3ZBynqbY2l" class="whatsapp-button">
-    Join WhatsApp Group for highlights
+  Join WhatsApp Group for highlights
 </a>
 
 <script>
-    const matches =[
-  {
-    "name": "Barcelona W x Real Madrid W",
-    "link": "https://topembed.pw/channel/exislamars",
-    "m3u8": ""
-  },
-  {
-    "name": "Germany x Italy",
-    "link": "https://sportzonline.ps/channels/hd/hd2.php",
-    "m3u8": ""
-  },
-  {
-    "name": "Portugal x Denmark",
-    "link": "https://sportzonline.ps/channels/hd/hd5.php",
-    "m3u8": ""
-  },
-  {
-    "name": "France x Croatia",
-    "link": "https://sportzonline.ps/channels/hd/hd4.php",
-    "m3u8": ""
-  },
-  {
-    "name": "Belgium x Ukraine",
-    "link": "https://sportzonline.ps/channels/hd/hd10.php",
-    "m3u8": ""
-  },
-  {
-    "name": "Spain x Netherlands",
-    "link": "https://sportzonline.ps/channels/hd/hd1.php",
-    "m3u8": ""
+  const matches = [
+    {
+      name: "Barcelona W x Real Madrid W",
+      link: "https://sportzonline.ps/channels/hd/hd5.php",
+      m3u8: ""
+    },
+    {
+      name: "Germany x Italy",
+      link: "https://sportzonline.ps/channels/hd/hd2.php",
+      m3u8: ""
+    },
+    {
+      name: "Portugal x Denmark",
+      link: "https://sportzonline.ps/channels/hd/hd5.php",
+      m3u8: ""
+    },
+    {
+      name: "France x Croatia",
+      link: "https://sportzonline.ps/channels/hd/hd4.php",
+      m3u8: ""
+    },
+    {
+      name: "Belgium x Ukraine",
+      link: "https://sportzonline.ps/channels/hd/hd10.php",
+      m3u8: ""
+    },
+    {
+      name: "Spain x Netherlands",
+      link: "https://sportzonline.ps/channels/hd/hd1.php",
+      m3u8: ""
+    }
+  ];
+
+  function blockAds(url) {
+    const blocked = ['ads', 'ad.', 'popup', 'track', 'banner', 'servead', 'adserver', 'doubleclick', 'googlesyndication'];
+    return blocked.some(keyword => url.includes(keyword));
   }
-]
 
+  function removeAdElements() {
+    setInterval(() => {
+      document.querySelectorAll('iframe, script, img, a, div, ins').forEach(el => {
+        const src = el.src || el.href || '';
+        if (blockAds(src)) {
+          el.remove();
+          console.log("Blocked Ad Element:", src);
+        }
+      });
+    }, 1000);
+  }
 
+  function loadVideo(url) {
+    const player = document.getElementById("phpPlayer");
+    player.src = url;
+  }
 
-    function loadVideo(url) {
-        const playerFrame = document.getElementById("phpPlayer");
-        playerFrame.src = url;
-    }
+  function openExternal(m3u8, php) {
+    const streamURL = m3u8 ? m3u8 : php;
+    window.location.href = `intent:${streamURL}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
+  }
 
-    function openExternal(m3u8, php) {
-        const streamURL = m3u8 ? m3u8 : php;
-        window.location.href = `intent:${streamURL}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
-    }
+  function renderMatches() {
+    const playlistDiv = document.getElementById("playlist");
+    playlistDiv.innerHTML = "";
 
-    function renderMatches() {
-        const playlistDiv = document.getElementById("playlist");
-        playlistDiv.innerHTML = "";
+    matches.forEach(match => {
+      const item = document.createElement("div");
+      item.classList.add("match-item");
 
-        matches.forEach(match => {
-            const matchItem = document.createElement("div");
-            matchItem.classList.add("match-item");
+      const matchBtn = document.createElement("button");
+      matchBtn.classList.add("match-button");
+      matchBtn.textContent = match.name;
+      matchBtn.onclick = () => loadVideo(match.link);
 
-            const matchButton = document.createElement("button");
-            matchButton.classList.add("match-button");
-            matchButton.textContent = match.name;
-            matchButton.onclick = () => loadVideo(match.link);
+      const extBtn = document.createElement("button");
+      extBtn.classList.add("external-button");
+      extBtn.textContent = "🔗";
+      extBtn.onclick = () => openExternal(match.m3u8, match.link);
 
-            const externalButton = document.createElement("button");
-            externalButton.classList.add("external-button");
-            externalButton.textContent = "🔗";
-            externalButton.onclick = () => openExternal(match.m3u8, match.link);
+      item.appendChild(matchBtn);
+      item.appendChild(extBtn);
+      playlistDiv.appendChild(item);
+    });
+  }
 
-            matchItem.appendChild(matchButton);
-            matchItem.appendChild(externalButton);
-            playlistDiv.appendChild(matchItem);
-        });
-    }
-
-    // Remove ad-related iframes and divs dynamically
-    function blockAds() {
-        setInterval(() => {
-            document.querySelectorAll('iframe, div, a, ins').forEach(element => {
-                if (element.src?.includes("ads") || element.id.includes("ads") || element.className.includes("ads")) {
-                    element.remove();
-                }
-            });
-        }, 1000);
-    }
-
-    window.onload = function() {
-        renderMatches();
-        loadVideo(matches[0].link);
-        blockAds();
-    };
+  window.onload = () => {
+    renderMatches();
+    loadVideo(matches[0].link);
+    removeAdElements();
+  };
 </script>
 
 </body>
