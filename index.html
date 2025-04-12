@@ -31,13 +31,32 @@
       background-color: black;
       margin: 10px auto;
       position: relative;
+      overflow: hidden;
     }
 
-    iframe {
+    #phpPlayer {
       width: 100%;
       height: 100%;
       border: none;
-      display: block;
+      display: none;
+    }
+
+    #countdown {
+      position: absolute;
+      color: white;
+      font-size: 24px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
     }
 
     #playlist {
@@ -86,27 +105,6 @@
       border: 1px solid #ccc;
       margin-top: 10px;
     }
-
-    /* Hide Ads via CSS */
-    iframe[src*="ads"],
-    iframe[id*="ads"],
-    iframe[name*="ads"],
-    iframe[class*="ads"],
-    div[id*="ads"],
-    div[class*="ads"],
-    a[href*="ads"],
-    ins,
-    .ad-banner,
-    .ad-container {
-      display: none !important;
-      visibility: hidden !important;
-    }
-
-    /* Prevent overlays above player */
-    body > *:not(#playerContainer):not(#playlist):not(.instruction-box):not(.whatsapp-button) {
-      z-index: 99999 !important;
-      position: relative;
-    }
   </style>
 </head>
 <body>
@@ -116,7 +114,9 @@
 </div>
 
 <div id="playerContainer">
-  <iframe id="phpPlayer" allow="autoplay" sandbox="allow-same-origin allow-scripts"></iframe>
+  <iframe id="phpPlayer" allow="autoplay"></iframe>
+  <div id="countdown"></div>
+  <div class="overlay"></div> <!-- block ad redirect -->
 </div>
 
 <div id="playlist"></div>
@@ -130,79 +130,71 @@
     {
       name: "Barcelona W x Real Madrid W",
       link: "https://topembed.pw/channel/exislamars",
-      m3u8: ""
+      start: "2025-04-12T17:00:00" // set in ISO format (local time)
     },
     {
       name: "Germany x Italy",
       link: "https://sportzonline.ps/channels/hd/hd2.php",
-      m3u8: ""
+      start: "2025-04-12T17:30:00"
     },
     {
       name: "Portugal x Denmark",
       link: "https://sportzonline.ps/channels/hd/hd5.php",
-      m3u8: ""
-    },
-    {
-      name: "France x Croatia",
-      link: "https://sportzonline.ps/channels/hd/hd4.php",
-      m3u8: ""
-    },
-    {
-      name: "Belgium x Ukraine",
-      link: "https://sportzonline.ps/channels/hd/hd10.php",
-      m3u8: ""
-    },
-    {
-      name: "Spain x Netherlands",
-      link: "https://sportzonline.ps/channels/hd/hd1.php",
-      m3u8: ""
+      start: "2025-04-12T18:00:00"
     }
   ];
 
-  function blockAds(url) {
-    const blocked = ['ads', 'ad.', 'popup', 'track', 'banner', 'servead', 'adserver', 'doubleclick', 'googlesyndication'];
-    return blocked.some(keyword => url.includes(keyword));
-  }
+  let countdownInterval;
 
-  function removeAdElements() {
-    setInterval(() => {
-      document.querySelectorAll('iframe, script, img, a, div, ins').forEach(el => {
-        const src = el.src || el.href || '';
-        if (blockAds(src)) {
-          el.remove();
-          console.log("Blocked Ad Element:", src);
-        }
-      });
-    }, 1000);
-  }
-
-  function loadVideo(url) {
+  function startCountdown(startTime, link) {
+    const countdown = document.getElementById("countdown");
     const player = document.getElementById("phpPlayer");
-    player.src = url;
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = new Date(startTime).getTime() - now;
+
+      if (distance <= 0) {
+        clearInterval(countdownInterval);
+        countdown.style.display = "none";
+        player.style.display = "block";
+        player.src = link;
+        return;
+      }
+
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      countdown.innerText = `Starting in: ${minutes}m ${seconds}s`;
+    }
+
+    countdown.style.display = "block";
+    player.style.display = "none";
+    player.src = ""; // Reset
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
   }
 
-  function openExternal(m3u8, php) {
-    const streamURL = m3u8 ? m3u8 : php;
-    window.location.href = `intent:${streamURL}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
+  function openExternal(php) {
+    window.location.href = `intent:${php}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
   }
 
   function renderMatches() {
     const playlistDiv = document.getElementById("playlist");
     playlistDiv.innerHTML = "";
 
-    matches.forEach(match => {
+    matches.forEach((match, index) => {
       const item = document.createElement("div");
       item.classList.add("match-item");
 
       const matchBtn = document.createElement("button");
       matchBtn.classList.add("match-button");
       matchBtn.textContent = match.name;
-      matchBtn.onclick = () => loadVideo(match.link);
+      matchBtn.onclick = () => startCountdown(match.start, match.link);
 
       const extBtn = document.createElement("button");
       extBtn.classList.add("external-button");
       extBtn.textContent = "🔗";
-      extBtn.onclick = () => openExternal(match.m3u8, match.link);
+      extBtn.onclick = () => openExternal(match.link);
 
       item.appendChild(matchBtn);
       item.appendChild(extBtn);
@@ -212,8 +204,7 @@
 
   window.onload = () => {
     renderMatches();
-    loadVideo(matches[0].link);
-    removeAdElements();
+    startCountdown(matches[0].start, matches[0].link); // load 1st match countdown
   };
 </script>
 
