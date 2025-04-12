@@ -38,16 +38,7 @@
       width: 100%;
       height: 100%;
       border: none;
-      display: none;
-    }
-
-    #countdown {
-      position: absolute;
-      color: white;
-      font-size: 24px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      display: block;
     }
 
     .overlay {
@@ -115,8 +106,7 @@
 
 <div id="playerContainer">
   <iframe id="phpPlayer" allow="autoplay"></iframe>
-  <div id="countdown"></div>
-  <div class="overlay"></div> <!-- block ad redirect -->
+  <div class="overlay"></div> <!-- blocks ad redirects -->
 </div>
 
 <div id="playlist"></div>
@@ -129,67 +119,39 @@
   const matches = [
     {
       name: "Barcelona W x Real Madrid W",
-      link: "https://topembed.pw/channel/exislamars",
-      start: "2025-04-12T17:00:00" // set in ISO format (local time)
+      link: "https://sportzonline.ps/channels/hd/hd5.php"
     },
     {
       name: "Germany x Italy",
-      link: "https://sportzonline.ps/channels/hd/hd2.php",
-      start: "2025-04-12T17:30:00"
+      link: "https://sportzonline.ps/channels/hd/hd2.php"
     },
     {
       name: "Portugal x Denmark",
-      link: "https://sportzonline.ps/channels/hd/hd5.php",
-      start: "2025-04-12T18:00:00"
+      link: "https://sportzonline.ps/channels/hd/hd5.php"
     }
   ];
 
-  let countdownInterval;
-
-  function startCountdown(startTime, link) {
-    const countdown = document.getElementById("countdown");
+  function playMatch(link) {
     const player = document.getElementById("phpPlayer");
-
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = new Date(startTime).getTime() - now;
-
-      if (distance <= 0) {
-        clearInterval(countdownInterval);
-        countdown.style.display = "none";
-        player.style.display = "block";
-        player.src = link;
-        return;
-      }
-
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      countdown.innerText = `Starting in: ${minutes}m ${seconds}s`;
-    }
-
-    countdown.style.display = "block";
-    player.style.display = "none";
-    player.src = ""; // Reset
-    updateCountdown();
-    countdownInterval = setInterval(updateCountdown, 1000);
+    player.src = link;
   }
 
-  function openExternal(php) {
-    window.location.href = `intent:${php}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
+  function openExternal(link) {
+    window.location.href = `intent:${link}#Intent;action=android.intent.action.VIEW;type=video/mp4;end;;`;
   }
 
   function renderMatches() {
-    const playlistDiv = document.getElementById("playlist");
-    playlistDiv.innerHTML = "";
+    const playlist = document.getElementById("playlist");
+    playlist.innerHTML = "";
 
-    matches.forEach((match, index) => {
+    matches.forEach(match => {
       const item = document.createElement("div");
       item.classList.add("match-item");
 
       const matchBtn = document.createElement("button");
       matchBtn.classList.add("match-button");
       matchBtn.textContent = match.name;
-      matchBtn.onclick = () => startCountdown(match.start, match.link);
+      matchBtn.onclick = () => playMatch(match.link);
 
       const extBtn = document.createElement("button");
       extBtn.classList.add("external-button");
@@ -198,14 +160,11 @@
 
       item.appendChild(matchBtn);
       item.appendChild(extBtn);
-      playlistDiv.appendChild(item);
+      playlist.appendChild(item);
     });
   }
 
-  window.onload = () => {
-    renderMatches();
-    startCountdown(matches[0].start, matches[0].link); // load 1st match countdown
-  };
+  window.onload = renderMatches;
 </script>
 
 </body>
